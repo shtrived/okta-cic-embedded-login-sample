@@ -84,7 +84,7 @@ const config = {
 };
 
 export default function createApp(opts) {
-  const issuer = `http://127.0.0.1:${opts.port || 3000}/`;
+  const issuer = `http://127.0.0.1:${opts.port || process.env.PORT || 3000}/`;
   const provider = new Provider(issuer, config);
 
   const { invalidate: orig } = provider.Client.Schema.prototype;
