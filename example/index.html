@@ -131,12 +131,18 @@
       </div>
       <div class="col-xs-6">
         <div>
-          <h4>Login with username and password:</h4>
+          <h4>Email or verified mobile number:</h4>
           <p>
             <input
               class="form-control login-username update-user-email"
               value=""
             />
+          </p>
+          <p>
+            Alternative login: <a href='#' class='passwordless-login'> Sign in with a one-time code.</a>
+          </p>
+          <p>
+            If using phone number for OTP please start with country code like +18888888888. Message and data rates may apply.
           </p>
           <p>
             <input
@@ -647,6 +653,32 @@
           },
           htmlConsole.dumpCallback.bind(htmlConsole)
         );
+      });
+
+      $('.passwordless-login').click(function(e) {
+        e.preventDefault();
+        let id = $('.login-username').val();
+        let phone_regex = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
+        let new_regex = /^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/;
+        if(new_regex.test(id)) {
+          webAuthPasswordless.passwordlessStart(
+            {
+              connection: 'sms',
+              email: $('.login-username').val(),
+              send: 'code'
+            },
+            htmlConsole.dumpCallback.bind(htmlConsole)
+          );
+        } else {
+          webAuthPasswordless.passwordlessStart(
+            {
+              connection: 'email',
+              email: $('.login-username').val(),
+              send: 'code'
+            },
+            htmlConsole.dumpCallback.bind(htmlConsole)
+          );
+        }
       });
 
       var popupHandler;
