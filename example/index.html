@@ -159,7 +159,7 @@
           </p>
         </div>
 
-        <hr />
+        <!--<hr />
 
         <div>
           <h4>Login with passwordless connection:</h4>
@@ -191,7 +191,7 @@
               />
             </p>
           </div>
-        </div>
+        </div>-->
 
         <hr />
 
@@ -658,18 +658,41 @@
       $('.passwordless-login').click(function(e) {
         e.preventDefault();
         let id = $('.login-username').val();
-        let phone_regex = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
-        let new_regex = /^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/;
-        if(new_regex.test(id)) {
+        let phone_regex = /^\+?(\d{1,3})\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
+        console.log(`trying regex ... ${phone_regex.test(id)}`);
+        if(phone_regex.test(id)) {
+          console.log(`Its a phone number .... ${id}`);
           webAuthPasswordless.passwordlessStart(
             {
               connection: 'sms',
-              email: $('.login-username').val(),
+              phone_number: $('.login-username').val(),
               send: 'code'
             },
             htmlConsole.dumpCallback.bind(htmlConsole)
           );
+
+          const verificationCode = prompt('Enter the code');
+
+          if (verificationCode) {
+            webAuthPasswordless.passwordlessLogin(
+              {
+                connection: 'sms',
+                verificationCode,
+                phoneNumber: id,
+                onRedirecting: done => {
+                  console.log('Redirecting passwordless...');
+                  done();
+                }
+              },
+              (err, res) => {
+                if (err) console.error(err);
+                console.log(res);
+              }
+            );
+          }
+
         } else {
+          console.log(`Its an email id .... ${id}`);
           webAuthPasswordless.passwordlessStart(
             {
               connection: 'email',
@@ -678,6 +701,27 @@
             },
             htmlConsole.dumpCallback.bind(htmlConsole)
           );
+
+          const verificationCode = prompt('Enter the code');
+
+          if (verificationCode) {
+            webAuthPasswordless.passwordlessLogin(
+              {
+                connection: 'email',
+                verificationCode,
+                email: id,
+                onRedirecting: done => {
+                  console.log('Redirecting passwordless...');
+                  done();
+                }
+              },
+              (err, res) => {
+                if (err) console.error(err);
+                console.log(res);
+              }
+            );
+          }
+
         }
       });
 
