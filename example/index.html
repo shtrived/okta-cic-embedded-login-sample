@@ -263,6 +263,7 @@
         var userEmail = '';
         var userPass = '';
         var configOrganization = undefined;
+        var realm = 'Username-Password-Authentication';
 
         var webAuthConfig = {
           domain: domain,
@@ -356,7 +357,14 @@
             username: $('.login-username').val(),
             password: $('.login-password').val()
           },
-          htmlConsole.dumpCallback.bind(htmlConsole)
+          // htmlConsole.dumpCallback.bind(htmlConsole)
+          function(err, data) {
+            htmlConsole.dumpCallback.bind(htmlConsole)(err, data);
+            this.webAuth.client.userInfo(
+              data.accessToken,
+              htmlConsole.dumpCallback.bind(htmlConsole)
+            );
+          }
         );
       });
 
@@ -431,24 +439,6 @@
         }
       });
 
-
-      $('.client-login-db').click(function(e) {
-        e.preventDefault();
-        webAuth.client.login(
-          {
-            realm: $('#client-login-realm').val(),
-            username: $('.client-login-username').val(),
-            password: $('.client-login-password').val()
-          },
-          function(err, data) {
-            htmlConsole.dumpCallback.bind(htmlConsole)(err, data);
-            this.webAuth.client.userInfo(
-              data.accessToken,
-              htmlConsole.dumpCallback.bind(htmlConsole)
-            );
-          }
-        );
-      });
 
       $('.login-facebook').click(function(e) {
         e.preventDefault();
